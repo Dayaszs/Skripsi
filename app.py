@@ -3,16 +3,42 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
+import gdown
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(page_title="Prediksi Nilai Ujian Siswa", page_icon="🎓", layout="centered")
 
-# --- 2. LOAD ARTEFAK ---
+# --- 2. LOAD ARTEFAK DARI GOOGLE DRIVE ---
 @st.cache_resource
 def load_all_artifacts():
-    # Folder tempat model disimpan
-    model_dir = ""
+    # Buat folder sementara untuk menyimpan model yang didownload
+    model_dir = "downloaded_models"
+    os.makedirs(model_dir, exist_ok=True)
     
+    # Masukkan Google Drive File ID untuk masing-masing file
+    # Ganti 'TULIS_ID_DISINI' dengan ID asli dari link Google Drive Anda
+    drive_files = {
+        'preprocessor_final.pkl': '1m2Y1pFZ7Q3LufvKvYVNBXZOPuCa4cn6S',
+        'selected_features.pkl': '1pbC2D_z2tpOEt72doVhUBDUwQhO58iTk',
+        'Linear_Original.pkl': '1JnGSfnlEtbTEJ50RfIezNNAUE8AocUDD',
+        'RF_Original.pkl': '1sZ6fiRxX9nm1tgXMm208kYHTACcnrXA9',
+        'SVR_Original.pkl': '1y9VfI8wIIwiJoyjCRbpVzvzdqtEh_ds5',
+        'Linear_SMOGN.pkl': '1SWk_hg4LhhymZxiijo6JsrNfxevuRDeS',
+        'RF_SMOGN.pkl': '1VIK2AlF_L48-m0EdygUgsPOnsB1HCsmH',
+        'SVR_SMOGN.pkl': '13mRcMwbTGMmz090Zr0fMJpMD96BvUnDI',
+        'Linear_SMOTER.pkl': '1M8CBKZxBbxSjQwDeA08whm-OdgiMlUYl',
+        'RF_SMOTER.pkl': '1gY9iBchXlFTBCmVGgvwPVvTrIEvTvc2Y',
+        'SVR_SMOTER.pkl': '1D5UhLIWtKMAUTWAFqn69YX_ulu4CxOAB'
+    }
+
+    # Download setiap file jika belum ada di folder lokal
+    for filename, file_id in drive_files.items():
+        filepath = os.path.join(model_dir, filename)
+        if not os.path.exists(filepath):
+            st.toast(f"Mendownload {filename}...") # Notifikasi kecil di UI
+            url = f'https://drive.google.com/uc?id={file_id}'
+            gdown.download(url, filepath, quiet=False)
+
     # Load Preprocessor dan Features
     preprocessor = joblib.load(os.path.join(model_dir, 'preprocessor_final.pkl'))
     selected_features = joblib.load(os.path.join(model_dir, 'selected_features.pkl'))
