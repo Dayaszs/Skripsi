@@ -35,7 +35,6 @@ def load_all_artifacts():
     for filename, file_id in drive_files.items():
         filepath = os.path.join(model_dir, filename)
         if not os.path.exists(filepath):
-            st.toast(f"Mendownload {filename}...") # Notifikasi kecil di UI
             url = f'https://drive.google.com/uc?id={file_id}'
             gdown.download(url, filepath, quiet=False)
 
@@ -57,7 +56,8 @@ def load_all_artifacts():
         
     return models, preprocessor, selected_features
 
-models, preprocessor, selected_features = load_all_artifacts()
+with st.spinner("Mengunduh dan memuat model... (Ini mungkin memakan waktu sebentar pada percobaan pertama)"):
+    models, preprocessor, selected_features = load_all_artifacts()
 
 # --- 3. DAFTAR KATEGORI SESUAI DATASET ---
 categorical_options = {
